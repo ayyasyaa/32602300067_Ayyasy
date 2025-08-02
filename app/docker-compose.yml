@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=ci4_db
+      - DB_USER=ci4user
+      - DB_PASS=ci4pass
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: ci4_db
+      MYSQL_USER: ci4user
+      MYSQL_PASSWORD: ci4pass
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/ci4_db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  db_data:
